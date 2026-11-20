@@ -68,6 +68,19 @@ class NetworkPolicyTest {
     }
 
     @Test
+    fun `insecure transport is rejected even for authorized hosts`() {
+        for (url in listOf("http://asr.example.com/api", "ws://asr.example.com/ws")) {
+            val reason = NetworkPolicy.check(
+                url,
+                trustedHosts = setOf("asr.example.com"),
+                declaredHosts = listOf("asr.example.com"),
+                authorizedHosts = setOf("asr.example.com")
+            )
+            assertTrue("$url should require a secure transport", reason?.contains("HTTPS/WSS") == true)
+        }
+    }
+
+    @Test
     fun `undeclared host rejected`() {
         val reason = NetworkPolicy.check(
             "wss://evil.example.com/ws",

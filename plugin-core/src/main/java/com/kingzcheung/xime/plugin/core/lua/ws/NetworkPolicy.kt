@@ -24,6 +24,10 @@ object NetworkPolicy {
         customHosts: Set<String> = emptySet()
     ): String? {
         val host = extractHost(url) ?: return "无法解析 URL: $url"
+        if (!url.startsWith("https://", ignoreCase = true) &&
+            !url.startsWith("wss://", ignoreCase = true)) {
+            return "只允许 HTTPS/WSS 安全连接"
+        }
         if (host in trustedHosts) return null
 
         if (host !in declaredHosts && host !in customHosts) {

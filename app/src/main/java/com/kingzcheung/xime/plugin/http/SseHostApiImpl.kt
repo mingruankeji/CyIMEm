@@ -123,13 +123,14 @@ class SseHostApiImpl(
 
             val id = nextId.getAndIncrement()
             var current: Session? = null
-            Log.d(TAG, "[$pluginId] SSE 会话 $id 建立: $url body=${body?.toString(Charsets.UTF_8)?.take(300) ?: "<空>"}")
+            val host = NetworkPolicy.extractHost(url) ?: "<invalid>"
+            Log.d(TAG, "[$pluginId] SSE 会话 $id 建立: $host bodyBytes=${body?.size ?: 0}")
             val esListener = object : EventSourceListener() {
                 override fun onEvent(eventSource: EventSource, id: String?, type: String?, data: String) {
                     val s = current ?: return
                     if (s.closed) return
                     s.totalText.append(data)
-                    Log.d(TAG, "[$pluginId] SSE 会话 ${s.id} 收到事件: ${data.take(200)}")
+                    Log.d(TAG, "[$pluginId] SSE 会话 ${s.id} 收到事件: ${data.length} chars")
                     listener.onData(data)
                 }
 
@@ -150,8 +151,7 @@ class SseHostApiImpl(
                         return
                     }
                     val message = if (response != null && !response.isSuccessful) {
-                        val body = runCatching { response.body?.string()?.take(300) }.getOrNull()
-                        "HTTP ${response.code}" + (if (body.isNullOrBlank()) "" else ": $body")
+                        "HTTP ${response.code}"
                     } else {
                         t?.message ?: "连接失败"
                     }
