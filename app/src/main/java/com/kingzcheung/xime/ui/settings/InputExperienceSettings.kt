@@ -3,6 +3,7 @@ package com.kingzcheung.xime.ui.settings
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.twotone.Keyboard
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import com.kingzcheung.xime.ui.i18n.Text
@@ -498,6 +499,16 @@ internal fun InputExperienceSettings(
                 Slider(value = settings.keyTextScale, onValueChange = { settings = settings.copy(keyTextScale = it) },
                     onValueChangeFinished = { settings.save(context) }, valueRange = 0.8f..1.6f, steps = 15)
             }
+            SettingsToggleItem(
+                icon = androidx.compose.material.icons.Icons.TwoTone.Keyboard,
+                title = "26 键字母加大",
+                subtitle = "放大 26 键字母并隐藏下方角标；上方提示遵循角标设置，滑动和长按输入不变。",
+                checked = settings.qwertyLargeLetterDisplay,
+                onCheckedChange = {
+                    settings = settings.copy(qwertyLargeLetterDisplay = it)
+                    settings.save(context)
+                },
+            )
             divider()
             // 原「字母键显示大写」「中文键盘字母显示大写」两个互锁开关合成三选一（11-01），存的值不变，见 KeyLabelCaseChoice。
             Column(Modifier.settingsSearchAnchor("键帽字母大小写", bleed = 16.dp, bleedVertical = 6.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {

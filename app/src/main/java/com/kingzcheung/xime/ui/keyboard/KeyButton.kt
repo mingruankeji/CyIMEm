@@ -369,6 +369,7 @@ fun SwipeableKeyButton(
     val resolvedColors = customLayoutKeyColors(customLayout, text, backgroundColor, textColor, customAccent, glassLabelSurface)
     val resolvedBackground = resolvedColors.first
     val resolvedText = resolvedColors.second
+    val letterDisplayStyle = qwertyLetterDisplayStyle(LocalQwertyLargeLetterDisplay.current, letterGroup)
     // 九键滑行占了 2～9 键的滑动，上滑出数字、角标都滑不出来：这些键的角标改为长按输入，和 26 键滑行一样
     // （用户 11-11「开着滑行长按失效…只有九键不会跳转」：以前照存的「滑动输入」，长按什么都不出）。
     val t9GlideOwnsDrag = LocalT9GlideKeys.current != null && badgeText?.singleOrNull()?.let { it in '2'..'9' } == true
@@ -443,7 +444,9 @@ fun SwipeableKeyButton(
     val upCornerOff = !cornerSymbols && upSymbol != null && boundCorners.first == null
     val downCornerOff = !cornerSymbols && downSymbol != null && boundCorners.second == null
     val upCornerLabel = (swipeUpKeyLabel ?: swipeText).takeUnless { upCornerOff }
-    val downCornerLabel = swipeDownKeyLabel.takeUnless { reserveDragForGlide && !letterGlideOwnsDrag || downCornerOff }
+    val downCornerLabel = swipeDownKeyLabel.takeUnless {
+        !letterDisplayStyle.showDownCorner || reserveDragForGlide && !letterGlideOwnsDrag || downCornerOff
+    }
     val keyOnSwipe = onSwipe.takeUnless { !cornerSymbols && upSymbol != null }
     val keyOnSwipeDown = onSwipeDown.takeUnless { !cornerSymbols && downSymbol != null }
     // 角标提示关着时键上不画角标，滑动时改用气泡显示要输入的符号（用户 11-14：长按有气泡，上下滑没有）。
@@ -728,7 +731,7 @@ fun SwipeableKeyButton(
         val labelSize = keyLabelSizeSp(text,
             if (fontSize != androidx.compose.ui.unit.TextUnit.Unspecified) fontSize.value else defaultFontSize,
             maxWidth.value, maxHeight.value, density.fontScale,
-            LocalKeyboardInputPreferences.current.keyTextScale)
+            LocalKeyboardInputPreferences.current.keyTextScale * letterDisplayStyle.labelScale)
         val hintScale = adaptiveHintScale(contentScale)
         val effectiveSwipeFontSize = swipeHintFontSp(swipeFontSize.value, contentScale).sp
         // 实际键帽太小时只留主字符，灰色上下滑提示不再挤在键面上。

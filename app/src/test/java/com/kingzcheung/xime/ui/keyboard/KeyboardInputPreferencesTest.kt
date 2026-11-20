@@ -300,6 +300,7 @@ class KeyboardInputPreferencesTest {
         assertEquals(10f, settings.cursorStepDp, 0f)
         assertEquals(1.2f, settings.keyTextScale, 0f)
         assertEquals(1.2f, KeyboardInputPreferences().keyTextScale, 0f)
+        assertEquals(true, settings.qwertyLargeLetterDisplay)
         values["key_text_scale"] = 1.15f
         assertEquals(1.15f, KeyboardInputPreferences.read(context).keyTextScale, 0f)
         assertEquals(0.5f, settings.handwritingPauseSeconds, 0f)
@@ -352,13 +353,25 @@ class KeyboardInputPreferencesTest {
 
     @Test
     fun `saved input preferences can be read without restarting the app`() {
-        val changed = KeyboardInputPreferences(spaceHold = SpaceHoldAction.REPEAT, cursorStepDp = 6f, keyTextScale = 1.4f, fixedSymbols = "…\n→",
+        val changed = KeyboardInputPreferences(spaceHold = SpaceHoldAction.REPEAT, cursorStepDp = 6f, keyTextScale = 1.4f,
+            qwertyLargeLetterDisplay = false, fixedSymbols = "…\n→",
             showPressBubble = true) // 按键浮标是单独的设置，默认开
         changed.save(context)
         assertEquals(changed, KeyboardInputPreferences.read(context))
         changed.copy(spaceHold = SpaceHoldAction.CURSOR, cursorStepDp = 24f).save(context)
         assertEquals(SpaceHoldAction.CURSOR, KeyboardInputPreferences.read(context).spaceHold)
         assertEquals(24f, KeyboardInputPreferences.read(context).cursorStepDp, 0f)
+    }
+
+    @Test
+    fun `large 26 key letter display defaults on and persists both choices`() {
+        val defaults = KeyboardInputPreferences.read(context)
+        assertEquals(true, defaults.qwertyLargeLetterDisplay)
+        assertTrue(KeyboardInputPreferences.QWERTY_LARGE_LETTER_DISPLAY_KEY in KeyboardInputPreferences.watchedKeys)
+        for (enabled in listOf(false, true)) {
+            defaults.copy(qwertyLargeLetterDisplay = enabled).save(context)
+            assertEquals(enabled, KeyboardInputPreferences.read(context).qwertyLargeLetterDisplay)
+        }
     }
 
     @Test fun `cursor hold delay persists tenths normalizes invalid values and leaves other actions unchanged`() {

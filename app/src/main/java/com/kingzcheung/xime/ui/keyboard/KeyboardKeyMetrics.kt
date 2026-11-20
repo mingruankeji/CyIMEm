@@ -76,8 +76,26 @@ internal object KeyboardKeyMetrics {
         hintCenterAboveDp - hintSizeSp * fontScale / 2f >= iconDp * 0.375f + 1f
 }
 
+internal const val QWERTY_LARGE_LETTER_SCALE = 1.15f
+
+internal data class QwertyLetterDisplayStyle(val labelScale: Float, val showDownCorner: Boolean)
+
+internal fun useLargeQwertyLetterLabels(
+    enabled: Boolean,
+    fourteenKey: Boolean,
+    honeycomb: Boolean,
+    zhuyin: Boolean,
+): Boolean = enabled && !fourteenKey && !honeycomb && !zhuyin
+
+internal fun qwertyLetterDisplayStyle(enabled: Boolean, letterGroup: String?): QwertyLetterDisplayStyle {
+    val isLetterKey = !letterGroup.isNullOrEmpty() && letterGroup.all { it.isLetter() }
+    return if (enabled && isLetterKey) QwertyLetterDisplayStyle(QWERTY_LARGE_LETTER_SCALE, false)
+    else QwertyLetterDisplayStyle(1f, true)
+}
+
 /** Grid siblings share one scale; sub-pixel cell allocation must not change their font size. */
 internal val LocalKeyboardKeyContentScale = staticCompositionLocalOf<Float?> { null }
+internal val LocalQwertyLargeLetterDisplay = staticCompositionLocalOf { false }
 
 @Composable
 internal fun keyContentScale(widthDp: Float, heightDp: Float): Float =

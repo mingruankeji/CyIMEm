@@ -73,6 +73,7 @@ data class KeyboardInputPreferences(
     val spaceHold: SpaceHoldAction = SpaceHoldAction.CURSOR,
     val cursorStepDp: Float = 10f,
     val keyTextScale: Float = DEFAULT_KEY_TEXT_SCALE,
+    val qwertyLargeLetterDisplay: Boolean = true,
     /**
      * 角标不透明度（主题与外观 › 角标与气泡），乘在角标原来的淡化上：1 = 原样（不开玻璃时按主字的 50%~70%，开玻璃时不淡化），
      * 调低更淡。开不开玻璃都起作用（GitHub #7 #60）。
@@ -360,13 +361,14 @@ data class KeyboardInputPreferences(
         /** 角标不透明度；新键，读不到就是 1（原样）。 */
         const val CORNER_HINT_OPACITY_KEY = "corner_hint_opacity"
         const val HIDE_FUNCTION_KEY_HINTS_KEY = "hide_function_key_hints"
+        const val QWERTY_LARGE_LETTER_DISPLAY_KEY = "qwerty_large_letter_display"
         internal val watchedKeys: Set<String> by lazy {
             setOf(CORNER_SYMBOL_INPUT_KEY, KeyEffectPreferences.GLOW, KeyEffectPreferences.ANIMATION, SettingsPreferences.KEY_SHOW_PRESS_BUBBLE,
                 SettingsPreferences.KEY_SHOW_PREEDIT_PREVIEW, SettingsPreferences.KEY_INLINE_PREEDIT_PREVIEW, SettingsPreferences.KEY_PREEDIT_STYLE, SettingsPreferences.KEY_INPUT_TEXT_LOCATION,
                 SettingsPreferences.KEY_PREEDIT_BUBBLE_OPACITY,
                 com.kingzcheung.xime.settings.LetterSwipeBindings.CHINESE, com.kingzcheung.xime.settings.LetterSwipeBindings.ENGLISH,
                 SettingsPreferences.KEY_SPLIT_KEYBOARD, SettingsPreferences.KEY_SPLIT_RIGHT_G, SettingsPreferences.KEY_FILL_KEYBOARD_BLANK, SettingsPreferences.KEY_WIDE_KEYS, SettingsPreferences.KEY_EVEN_MERGED_KEYS, SettingsPreferences.KEY_NUMBER_ROW, SettingsPreferences.KEY_SPLIT_GAP_PORTRAIT, SettingsPreferences.KEY_SPLIT_GAP_LANDSCAPE, CHINESE_GLIDE_KEY, DELETE_CHINESE_GLIDE_CHARACTER_KEY, GLIDE_PREVIEW_KEY, ENGLISH_AUTO_SPACE_KEY, ENGLISH_PUNCTUATION_SPACE_KEY, EMAIL_SUFFIXES_KEY, ADDRESS_FIELDS_ENGLISH_KEY, SYMBOL_NAMES_KEY, GREEK_LETTERS_KEY, CYLM_LONG_ALTERNATIVE_KEY,
-                "space_hold_action", "cursor_gesture_mode", "cursor_hold_seconds", "neighbor_correction", com.kingzcheung.xime.settings.SpellingPatches.DOUBLE_PINYIN_CORRECTION_KEY, MIXED_INPUT_KEY, RARE_CHARACTERS_KEY, TRADITIONAL_OUTPUT_KEY, CANDIDATE_EMOJI_KEY, DATETIME_CANDIDATES_KEY, "symbol_input_mode", "symbol_long_press_seconds", "symbol_long_press_seconds_v2", "cursor_step_dp", "cursor_swipe_lines", "cursor_step_haptic", "cursor_step_sound", "key_text_scale", CORNER_HINT_OPACITY_KEY, HIDE_FUNCTION_KEY_HINTS_KEY, UPPERCASE_KEY_LABELS_KEY, CHINESE_UPPERCASE_KEY_LABELS_KEY, "fixed_symbols",
+                "space_hold_action", "cursor_gesture_mode", "cursor_hold_seconds", "neighbor_correction", com.kingzcheung.xime.settings.SpellingPatches.DOUBLE_PINYIN_CORRECTION_KEY, MIXED_INPUT_KEY, RARE_CHARACTERS_KEY, TRADITIONAL_OUTPUT_KEY, CANDIDATE_EMOJI_KEY, DATETIME_CANDIDATES_KEY, "symbol_input_mode", "symbol_long_press_seconds", "symbol_long_press_seconds_v2", "cursor_step_dp", "cursor_swipe_lines", "cursor_step_haptic", "cursor_step_sound", "key_text_scale", QWERTY_LARGE_LETTER_DISPLAY_KEY, CORNER_HINT_OPACITY_KEY, HIDE_FUNCTION_KEY_HINTS_KEY, UPPERCASE_KEY_LABELS_KEY, CHINESE_UPPERCASE_KEY_LABELS_KEY, "fixed_symbols",
                 "fourteen_letter_swipe", "fourteen_letter_swipe_dp", "reverse_symbol_swipe", CLEAR_ALL_WHILE_COMPOSING_KEY, CLEAR_BEFORE_CURSOR_ONLY_KEY, SWIPE_DISTANCE_DELETE_KEY, com.kingzcheung.xime.keyboard.DeleteRepeatSpeed.KEY, REVERSE_DELETE_SWIPE_KEY, CLEAR_SWIPE_PERCENT_KEY, JAPANESE_LONG_VOWEL_KEY, "syllable_split_key", "shift_syllable_split", "kana_direction_hints", "flick_direction_disc", "flick_direction_disc_v2",
                 "glide_typing", "glide_typing_v2", "letter_long_press_menu", "t9_flick_letters", "t9_glide_typing", "language_key_hold_seconds", "language_key_hold_seconds_v2", LANGUAGE_KEY_IME_PICKER_KEY, "symbol_key_hold_seconds", "t9_candidate_drag_percent", T9_MERGE_ZERO_ENTER_KEY, STROKE_MERGE_ZERO_ENTER_KEY,
                 SettingsPreferences.KEY_HANDWRITING_WUBI_HINTS, "qwerty_stagger_mode", "qwerty_stagger_custom", "qwerty_comma_key", "qwerty_period_key", "qwerty_period_key_v2", "bottom_punctuation_swipe_up_v3", com.kingzcheung.xime.service.ENGLISH_SENTENCE_CAPS,
@@ -499,6 +501,7 @@ data class KeyboardInputPreferences(
                 strokeMergeZeroIntoEnter = prefs.getBoolean(STROKE_MERGE_ZERO_ENTER_KEY, false),
                 keyTextScale = prefs.getFloat("key_text_scale", DEFAULT_KEY_TEXT_SCALE)
                     .takeIf { it.isFinite() }?.coerceIn(0.8f, 1.6f) ?: DEFAULT_KEY_TEXT_SCALE,
+                qwertyLargeLetterDisplay = prefs.getBoolean(QWERTY_LARGE_LETTER_DISPLAY_KEY, true),
                 cornerHintOpacity = normalizeCornerHintOpacity(prefs.getFloat(CORNER_HINT_OPACITY_KEY, 1f)),
                 hideFunctionKeyHints = prefs.getBoolean(HIDE_FUNCTION_KEY_HINTS_KEY, false),
                 uppercaseKeyLabels = prefs.getBoolean(UPPERCASE_KEY_LABELS_KEY, false),
@@ -572,6 +575,7 @@ data class KeyboardInputPreferences(
             .putBoolean(BOTTOM_LIFT_CURSOR_KEY, bottomLiftCursor)
             .putBoolean(VOICE_SWIPE_CANCEL_KEY, voiceSwipeCancel)
             .putFloat("key_text_scale", keyTextScale.coerceIn(0.8f, 1.6f))
+            .putBoolean(QWERTY_LARGE_LETTER_DISPLAY_KEY, qwertyLargeLetterDisplay)
             .putFloat(CORNER_HINT_OPACITY_KEY, normalizeCornerHintOpacity(cornerHintOpacity))
             .putBoolean(HIDE_FUNCTION_KEY_HINTS_KEY, hideFunctionKeyHints)
             .putBoolean(UPPERCASE_KEY_LABELS_KEY, uppercaseKeyLabels)

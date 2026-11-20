@@ -34,6 +34,22 @@ class KeyboardResponsiveSizingTest {
         assertEquals(20f, KeyboardKeyMetrics.iconSizeDp(64f, 48f), tolerance)
     }
 
+    @Test fun largeLetterDisplayIsLimitedTo26KeyLettersAndHidesOnlyTheirLowerHint() {
+        assertEquals(true, useLargeQwertyLetterLabels(true, fourteenKey = false, honeycomb = false, zhuyin = false))
+        assertEquals(false, useLargeQwertyLetterLabels(true, fourteenKey = true, honeycomb = false, zhuyin = false))
+        assertEquals(false, useLargeQwertyLetterLabels(true, fourteenKey = false, honeycomb = true, zhuyin = false))
+        assertEquals(false, useLargeQwertyLetterLabels(true, fourteenKey = false, honeycomb = false, zhuyin = true))
+        assertEquals(false, useLargeQwertyLetterLabels(false, fourteenKey = false, honeycomb = false, zhuyin = false))
+
+        val letterStyle = qwertyLetterDisplayStyle(true, "a")
+        assertEquals(QWERTY_LARGE_LETTER_SCALE, letterStyle.labelScale, tolerance)
+        assertEquals(false, letterStyle.showDownCorner)
+        assertEquals(1f, qwertyLetterDisplayStyle(true, ";").labelScale, tolerance)
+        assertEquals(true, qwertyLetterDisplayStyle(true, ";").showDownCorner)
+        assertEquals(1f, qwertyLetterDisplayStyle(false, "a").labelScale, tolerance)
+        assertEquals(true, qwertyLetterDisplayStyle(false, "a").showDownCorner)
+    }
+
     @Test fun tabletKanaFunctionLabelsAndIconsGrowTogether() {
         listOf("変換", "123", "記号", "あ", "わ").forEach {
             assertEquals(24f, KeyboardKeyMetrics.labelSizeSp(it, 16f, 150f, 96f, 1f), tolerance)

@@ -199,6 +199,8 @@ fun KeyboardLayout(
     } else null
     // 注音（大千）：11 列，下面三行 10 键缩进半键，没有 Shift，删除键在第四行末尾。
     val zhuyin = !isAsciiMode && uiState.inputProfile.layout.kind == com.kingzcheung.xime.settings.LayoutKind.ZHUYIN
+    val largeQwertyLetterDisplay = useLargeQwertyLetterLabels(
+        LocalKeyboardInputPreferences.current.qwertyLargeLetterDisplay, fourteenKey, honeycomb, zhuyin)
     // 数字行（默认关）：字母上方一排，键和顺序在「按键符号 → 数字行」里改；注音不加（见 [numberRowShown]）。
     val numberRowPrefs = LocalKeyboardInputPreferences.current
     val numberKeys = remember(numberRowPrefs.numberRow, zhuyin, numberRowPrefs.sideSymbols) {
@@ -602,6 +604,7 @@ fun KeyboardLayout(
     CompositionLocalProvider(
         LocalKeyGapLight provides gapLight,
         LocalFourteenKeyLayout provides fourteenKey,
+        LocalQwertyLargeLetterDisplay provides largeQwertyLetterDisplay,
         LocalLongVowelOnL provides (longVowelKey == JapaneseLongVowelKey.L_KEY),
         LocalLetterGeometry provides geometry,
         LocalCustomLayout provides letterLayout,
