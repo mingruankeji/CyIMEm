@@ -228,7 +228,7 @@ fun AboutContent(
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         Text(
-                            text = "版本 ${AppInfo.versionName} (${AppInfo.versionCode})",
+                            text = "版本：大明哥专用版 · ${AppInfo.versionName} (${AppInfo.versionCode})",
                             fontSize = 14.sp,
                             color = MaterialTheme.colorScheme.onSurface
                         )
